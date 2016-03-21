@@ -2,7 +2,7 @@ package ist.meic.pa;
 
 public class SumInts {
 	private static long sumOfIntegerUptoN(int n) {
-		long sum = 0L;
+		Long sum = 0L;
 		for (int i = 0; i < n; i++) {
 			sum += i;
 		}
@@ -21,8 +21,8 @@ public class SumInts {
 	
 	public static void main(String[] args) {
 		long start = System.currentTimeMillis();
-		printSum(sumOfIntegerUptoN(100000000));
-		System.out.println( "INTEGER: " + Integer.valueOf(5));
+		printSum(sumOfIntegerUptoN(10));
+		//System.out.println( "INTEGER: " + Integer.valueOf(5));
 		long end = System.currentTimeMillis();
 		System.out.println("Time: " + (end - start));
 	}
