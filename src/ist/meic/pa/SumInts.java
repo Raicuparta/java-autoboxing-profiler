@@ -14,9 +14,15 @@ public class SumInts {
 		return n;
 	}
 	
+	public static void mamain() {
+		String[] args = {};
+		main(args);
+	}
+	
 	public static void main(String[] args) {
 		long start = System.currentTimeMillis();
 		printSum(sumOfIntegerUptoN(100000000));
+		System.out.println( "INTEGER: " + Integer.valueOf(5));
 		long end = System.currentTimeMillis();
 		System.out.println("Time: " + (end - start));
 	}

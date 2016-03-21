@@ -2,6 +2,7 @@ package ist.meic.pa;
 import javassist.*;
 import javassist.expr.*;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
@@ -9,47 +10,32 @@ import java.util.Arrays;
 public class BoxingProfiler {
 	public static void main (String[] args) throws Throwable {
 		
-		/*String name = args[0];
-		String[] arguments = Arrays.copyOfRange(args, 1, args.length);*/
+		ClassPool cp = ClassPool.getDefault();
+		CtClass sumInts = cp.getCtClass("ist.meic.pa.SumInts");
+		
+		Loader classLoader = new Loader();
+		
+		final String template = ""
+				+ "{System.out.println(\"REPLACED\");"
+				+ "$_ = $proceed($$);"
+				+ "}";
+
+		sumInts.instrument(new ExprEditor() {
+			public void edit(MethodCall m) throws CannotCompileException {
+				if (m.getMethodName().equals("valueOf")) {
+					System.out.println(m.getClassName());
+					m.replace(template);
+				}
+			}
+		});
+		
+		Class newSumInts = sumInts.toClass();
+		
+		Class[] argTypes = {String[].class};
 		
 
-			ClassPool cp = ClassPool.getDefault();
-			CtClass integer = cp.getCtClass("java.lang.Integer");
-			//CodeConverter conv = new CodeConverter();
-			//Loader classLoader = new Loader();
-			//classLoader.addTranslator(cp, t);
-			
-			CtClass bp = cp.getCtClass("ist.meic.pa.BoxingProfiler");
-			//CtClass[] argInt = {cp.get("int")};
-			//CtMethod original = bp.getDeclaredMethod("test");
-			
-			
-			//CtMethod original = bp.getDeclaredMethod("valueOf",);
-			
-			//CtMethod before = bp.getDeclaredMethod("beforeTest");
-			//CtMethod replace = bp.getDeclaredMethod("beforeTest");
-			
-
-			Translator translator = new BoxingTranslator();
-			ClassPool pool = ClassPool.getDefault();
-			Loader classLoader = new Loader();
-			classLoader.addTranslator(pool, translator);
-			//classLoader.run("java.lang.Integer", null);
-			classLoader.run("ist.meic.pa.BoxingTranslator", args);
-			
-			BoxingTranslator bt = (BoxingTranslator) translator;
-			bt.test();
-			
-			
-			/*integer.writeFile();
-			integer.defrost();*/
-						
-			
-			/*Class[] arg = {int.class};
-			Method m = i.getClass().getMethod("valueOf", arg);
-			Object[] val = {10};
-			Integer result = (Integer) m.invoke(i, val);
-			System.out.println("Integer: " + result);*/
+		Method m = newSumInts.getMethod("mamain");
+		m.invoke(null);
 	}
 	
 	private static void test() {
