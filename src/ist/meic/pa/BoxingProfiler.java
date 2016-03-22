@@ -2,7 +2,10 @@ package ist.meic.pa;
 import javassist.*;
 import javassist.expr.*;
 import java.lang.reflect.Method;
+import java.util.Comparator;
+import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 
 public class BoxingProfiler {
@@ -30,7 +33,7 @@ public class BoxingProfiler {
 		"double"
 	};
 	
-	static TreeMap map = new TreeMap();
+	static TreeMap<OutputInfo, Integer> map;
 	
 	private static boolean isBoxing(String className, String methodName) {
 		
@@ -64,18 +67,28 @@ public class BoxingProfiler {
 		return false;
 	}
 	
+	public static void add (String className, String methodName, boolean isBoxing) {
+		OutputInfo oi = new OutputInfo(className, methodName, isBoxing);
+		int count = 0;
+		if(map.containsKey(oi)) count = map.get(oi) + 1;
+		map.put(oi, count);
+		System.out.println("pila");
+	}
+	
 	public static void main (String[] args) throws Throwable {
+		
+		OutputComparator comparator = new OutputComparator();
+		map = new TreeMap(comparator);
 		
 		ClassPool cp = ClassPool.getDefault();
 		CtClass sumInts = cp.getCtClass(args[0]);
 		
 		final String boxingTemplate = "{"
-				+ "System.out.println(\"BOXING\");"
+				+ "ist.meic.pa.BoxingProfiler.add(\"bb\", \"bb\", true);"
 				+ "$_ = $proceed($$);"
 				+ "}";
 		
 		final String unboxingTemplate = "{"
-				+ "System.out.println(\"UNBOXCING\");"
 				+ "$_ = $proceed($$);"
 				+ "}";
 		
@@ -85,7 +98,7 @@ public class BoxingProfiler {
 				String className = m.getClassName();
 				String methodName = m.getMethodName();
 				
-				System.out.println("Method: " + methodName + ", " + "Class: " + className);
+				//System.out.println("Method: " + methodName + ", " + "Class: " + className);
 				
 				if (isBoxing(className, methodName)) m.replace(boxingTemplate);
 				
@@ -98,5 +111,9 @@ public class BoxingProfiler {
 		Method m = newSumInts.getMethod("main", argTypes);
 		Object[] mainArgs = {args};
 		m.invoke(null, mainArgs);
+		
+		for (OutputInfo oi : map.keySet()) {
+			System.out.println("Class: " + oi.className +", Method: " + oi.methodName + ", Boxing: " + oi.isBoxing + ", Count: " + map.get(oi));
+		}
 	}
 }
