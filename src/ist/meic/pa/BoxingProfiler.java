@@ -1,11 +1,8 @@
 package ist.meic.pa;
 import javassist.*;
 import javassist.expr.*;
-
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.TreeMap;
 
 
 public class BoxingProfiler {
@@ -32,42 +29,8 @@ public class BoxingProfiler {
 		"short",
 		"double"
 	};
-
-	public static void main (String[] args) throws Throwable {
-
-		ClassPool cp = ClassPool.getDefault();
-		CtClass sumInts = cp.getCtClass(args[0]);
-
-		final String boxingTemplate = "{"
-				+ "System.out.println(\"BOXING\");"
-				+ "$_ = $proceed($$);"
-				+ "}";
-		
-		final String unboxingTemplate = "{"
-				+ "System.out.println(\"UNBOXCING\");"
-				+ "$_ = $proceed($$);"
-				+ "}";
-
-		sumInts.instrument(new ExprEditor() {
-			public void edit(MethodCall m) throws CannotCompileException {
-				
-				String className = m.getClassName();
-				String methodName = m.getMethodName();
-					
-				System.out.println("Method: " + methodName + ", " + "Class: " + className);
-				
-				if (isBoxing(className, methodName)) m.replace(boxingTemplate);
-				
-				else if (isUnboxing(className, methodName)) m.replace(unboxingTemplate);
-			}
-		});
-
-		Class[] argTypes = {String[].class};
-		Class newSumInts = sumInts.toClass();
-		Method m = newSumInts.getMethod("main", argTypes);
-		Object[] mainArgs = {args};
-		m.invoke(null, mainArgs);
-	}
+	
+	static TreeMap map = new TreeMap();
 	
 	private static boolean isBoxing(String className, String methodName) {
 		
@@ -99,5 +62,41 @@ public class BoxingProfiler {
 		}
 		
 		return false;
+	}
+	
+	public static void main (String[] args) throws Throwable {
+		
+		ClassPool cp = ClassPool.getDefault();
+		CtClass sumInts = cp.getCtClass(args[0]);
+		
+		final String boxingTemplate = "{"
+				+ "System.out.println(\"BOXING\");"
+				+ "$_ = $proceed($$);"
+				+ "}";
+		
+		final String unboxingTemplate = "{"
+				+ "System.out.println(\"UNBOXCING\");"
+				+ "$_ = $proceed($$);"
+				+ "}";
+		
+		sumInts.instrument(new ExprEditor() {
+			public void edit(MethodCall m) throws CannotCompileException {
+				
+				String className = m.getClassName();
+				String methodName = m.getMethodName();
+				
+				System.out.println("Method: " + methodName + ", " + "Class: " + className);
+				
+				if (isBoxing(className, methodName)) m.replace(boxingTemplate);
+				
+				else if (isUnboxing(className, methodName)) m.replace(unboxingTemplate);
+			}
+		});
+		
+		Class[] argTypes = {String[].class};
+		Class newSumInts = sumInts.toClass();
+		Method m = newSumInts.getMethod("main", argTypes);
+		Object[] mainArgs = {args};
+		m.invoke(null, mainArgs);
 	}
 }
