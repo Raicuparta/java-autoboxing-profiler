@@ -28,9 +28,11 @@ public class BoxingProfiler {
 			}
 		});
 		
+		Class[] argTypes = {String[].class};
 		Class newSumInts = sumInts.toClass();
-		Method m = newSumInts.getMethod("mamain");
-		m.invoke(null);
+		Method m = newSumInts.getMethod("main", argTypes);
+		Object[] mainArgs = {args};
+		m.invoke(null, mainArgs);
 	}
 	
     private static Class getClass(String name) {

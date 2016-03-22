@@ -14,11 +14,6 @@ public class SumInts {
 		return n;
 	}
 	
-	public static void mamain() {
-		String[] args = {};
-		main(args);
-	}
-	
 	public static void main(String[] args) {
 		long start = System.currentTimeMillis();
 		printSum(sumOfIntegerUptoN(10));
