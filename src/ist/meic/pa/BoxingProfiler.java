@@ -69,10 +69,9 @@ public class BoxingProfiler {
 	
 	public static void add (String className, String methodName, boolean isBoxing) {
 		OutputInfo oi = new OutputInfo(className, methodName, isBoxing);
-		int count = 0;
+		int count = 1;
 		if(map.containsKey(oi)) count = map.get(oi) + 1;
 		map.put(oi, count);
-		System.out.println("pila");
 	}
 	
 	public static void main (String[] args) throws Throwable {
@@ -83,12 +82,8 @@ public class BoxingProfiler {
 		ClassPool cp = ClassPool.getDefault();
 		CtClass sumInts = cp.getCtClass(args[0]);
 		
-		final String boxingTemplate = "{"
-				+ "ist.meic.pa.BoxingProfiler.add(\"bb\", \"bb\", true);"
-				+ "$_ = $proceed($$);"
-				+ "}";
-		
-		final String unboxingTemplate = "{"
+		final String template = "{"
+				+ "ist.meic.pa.BoxingProfiler.add(\"%s\", \"%s\", %b);"
 				+ "$_ = $proceed($$);"
 				+ "}";
 		
@@ -97,12 +92,16 @@ public class BoxingProfiler {
 				
 				String className = m.getClassName();
 				String methodName = m.getMethodName();
+				String methodLongName = "";
+				methodLongName = m.where().getLongName();
+				boolean isBoxing;
 				
-				//System.out.println("Method: " + methodName + ", " + "Class: " + className);
+				if (isBoxing(className, methodName)) isBoxing = true;
+				else if (isUnboxing(className, methodName)) isBoxing = false;
+				else return;
 				
-				if (isBoxing(className, methodName)) m.replace(boxingTemplate);
-				
-				else if (isUnboxing(className, methodName)) m.replace(unboxingTemplate);
+				String formatted = String.format(template, className, methodLongName, isBoxing);
+				m.replace(formatted);
 			}
 		});
 		
@@ -113,7 +112,7 @@ public class BoxingProfiler {
 		m.invoke(null, mainArgs);
 		
 		for (OutputInfo oi : map.keySet()) {
-			System.out.println("Class: " + oi.className +", Method: " + oi.methodName + ", Boxing: " + oi.isBoxing + ", Count: " + map.get(oi));
+			System.out.println(oi.methodName + " " + (oi.isBoxing? "boxed " : "unboxed ") + map.get(oi) + " " + oi.className);
 		}
 	}
 }
