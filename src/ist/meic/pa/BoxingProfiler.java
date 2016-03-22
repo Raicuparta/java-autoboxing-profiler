@@ -36,7 +36,7 @@ public class BoxingProfiler {
 	public static void main (String[] args) throws Throwable {
 
 		ClassPool cp = ClassPool.getDefault();
-		CtClass sumInts = cp.getCtClass("ist.meic.pa.SumInts");
+		CtClass sumInts = cp.getCtClass(args[0]);
 
 		final String boxingTemplate = "{"
 				+ "System.out.println(\"BOXING\");"
