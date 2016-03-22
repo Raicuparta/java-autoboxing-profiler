@@ -17,8 +17,11 @@ public class SumInts {
 	public static void main(String[] args) {
 		long start = System.currentTimeMillis();
 		printSum(sumOfIntegerUptoN(10));
-		//System.out.println( "INTEGER: " + Integer.valueOf(5));
 		long end = System.currentTimeMillis();
 		System.out.println("Time: " + (end - start));
+		
+		Integer.valueOf(5);
+		Integer i = new Integer(3);
+		i.intValue();
 	}
 }
