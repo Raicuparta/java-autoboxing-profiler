@@ -2,11 +2,7 @@ package ist.meic.pa;
 import javassist.*;
 import javassist.expr.*;
 import java.lang.reflect.Method;
-import java.util.Comparator;
-import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.TreeSet;
-
 
 public class BoxingProfiler {
 
@@ -77,7 +73,7 @@ public class BoxingProfiler {
 	public static void main (String[] args) throws Throwable {
 		
 		OutputComparator comparator = new OutputComparator();
-		map = new TreeMap(comparator);
+		map = new TreeMap<OutputInfo, Integer>(comparator);
 		
 		ClassPool cp = ClassPool.getDefault();
 		CtClass sumInts = cp.getCtClass(args[0]);
@@ -105,8 +101,8 @@ public class BoxingProfiler {
 			}
 		});
 		
-		Class[] argTypes = {String[].class};
-		Class newSumInts = sumInts.toClass();
+		Class<?>[] argTypes = {String[].class};
+		Class<?> newSumInts = sumInts.toClass();
 		Method m = newSumInts.getMethod("main", argTypes);
 		Object[] mainArgs = {args};
 		m.invoke(null, mainArgs);
