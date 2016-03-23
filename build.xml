@@ -1,0 +1,33 @@
+<project name="BoxingProfiler" default="compile" basedir="" >
+    <target name="init">
+		<mkdir dir="classes"/>
+    </target>
+    
+    <target name="clean">
+        <delete dir="classes"/>
+        <delete file="BoxingProfiler.jar"/>
+    </target>
+
+    <target name="compile" depends="clean, init">
+    	<javac srcdir="src" destdir="classes">
+    		<classpath>
+    			<pathelement location="javassist.jar"/>
+    			<pathelement path="."/>
+			</classpath>
+    	</javac>
+    	
+    	<jar destfile = "BoxingProfiler.jar"
+    	   basedir = "classes">
+    		<manifest>
+		        <attribute name="Main-Class" value="ist.meic.pa.BoxingProfiler" />
+		    </manifest>
+    		<zipgroupfileset dir="." includes="javassist.jar" />
+    	</jar>
+    </target>
+
+    <target name="run" depends="clean, init, compile">
+    	<java jar="BoxingProfiler.jar" fork="true">
+    		<arg line="SumInts"/>
+    	</java>
+    </target>
+</project>

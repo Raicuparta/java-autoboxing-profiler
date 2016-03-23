@@ -71,48 +71,56 @@ public class BoxingProfiler {
 	
 	public static void printProfile() {
 		for (OutputInfo oi : map.keySet()) {
-			System.err.println(oi.methodName + " " + (oi.isBoxing? "boxed " : "unboxed ") + map.get(oi) + " " + oi.className);
+			System.out.println(oi.methodName + " " + (oi.isBoxing? "boxed " : "unboxed ") + map.get(oi) + " " + oi.className);
 		}
 	}
 	
-	public static void main(String[] args) throws Throwable {
-		
-		OutputComparator comparator = new OutputComparator();
-		map = new TreeMap<OutputInfo, Integer>(comparator);
-		
-		ClassPool cp = ClassPool.getDefault();
-		CtClass sumInts = cp.getCtClass(args[0]);
+	public static void main(String[] args) {
 		
 		
-		final String template = "{"
-			+ "ist.meic.pa.BoxingProfiler.add(\"%s\", \"%s\", %b);"
-			+ "$_ = $proceed($$);"
-		+ "}";
+		try {
+			OutputComparator comparator = new OutputComparator();
+			map = new TreeMap<OutputInfo, Integer>(comparator);
+			
+			ClassPool cp = ClassPool.getDefault();
+			CtClass sumInts;
+			sumInts = cp.getCtClass(args[0]);
+			
+			final String template = "{"
+					+ "ist.meic.pa.BoxingProfiler.add(\"%s\", \"%s\", %b);"
+					+ "$_ = $proceed($$);"
+					+ "}";
+			
+			sumInts.instrument(new ExprEditor() {
+				public void edit(MethodCall m) throws CannotCompileException {
+					
+					String className = m.getClassName();
+					String methodName = m.getMethodName();
+					String methodLongName = "";
+					methodLongName = m.where().getLongName();
+					boolean isBoxing;
+					
+					if (isBoxing(className, methodName)) isBoxing = true;
+					else if (isUnboxing(className, methodName)) isBoxing = false;
+					else return;
+					
+					String formatted = String.format(template, className, methodLongName, isBoxing);
+					m.replace(formatted);
+				}
+			});
+			
+			Class<?>[] argTypes = {String[].class};
+			Class<?> newSumInts = sumInts.toClass();
+			Method m = newSumInts.getMethod("main", argTypes);
+			Object[] mainArgs = {args};
+			m.invoke(null, mainArgs);
+			
+			printProfile();
+		} catch (Throwable e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
-		sumInts.instrument(new ExprEditor() {
-			public void edit(MethodCall m) throws CannotCompileException {
-				
-				String className = m.getClassName();
-				String methodName = m.getMethodName();
-				String methodLongName = "";
-				methodLongName = m.where().getLongName();
-				boolean isBoxing;
-				
-				if (isBoxing(className, methodName)) isBoxing = true;
-				else if (isUnboxing(className, methodName)) isBoxing = false;
-				else return;
-				
-				String formatted = String.format(template, className, methodLongName, isBoxing);
-				m.replace(formatted);
-			}
-		});
 		
-		Class<?>[] argTypes = {String[].class};
-		Class<?> newSumInts = sumInts.toClass();
-		Method m = newSumInts.getMethod("main", argTypes);
-		Object[] mainArgs = {args};
-		m.invoke(null, mainArgs);
-		
-		printProfile();
 	}
 }
