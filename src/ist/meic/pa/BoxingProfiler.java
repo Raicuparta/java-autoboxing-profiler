@@ -62,14 +62,20 @@ public class BoxingProfiler {
 		return false;
 	}
 	
-	public static void add (String className, String methodName, boolean isBoxing) {
+	public static void add(String className, String methodName, boolean isBoxing) {
 		OutputInfo oi = new OutputInfo(className, methodName, isBoxing);
 		int count = 1;
 		if(map.containsKey(oi)) count = map.get(oi) + 1;
 		map.put(oi, count);
 	}
 	
-	public static void main (String[] args) throws Throwable {
+	public static void printProfile() {
+		for (OutputInfo oi : map.keySet()) {
+			System.err.println(oi.methodName + " " + (oi.isBoxing? "boxed " : "unboxed ") + map.get(oi) + " " + oi.className);
+		}
+	}
+	
+	public static void main(String[] args) throws Throwable {
 		
 		OutputComparator comparator = new OutputComparator();
 		map = new TreeMap<OutputInfo, Integer>(comparator);
@@ -77,10 +83,11 @@ public class BoxingProfiler {
 		ClassPool cp = ClassPool.getDefault();
 		CtClass sumInts = cp.getCtClass(args[0]);
 		
+		
 		final String template = "{"
-				+ "ist.meic.pa.BoxingProfiler.add(\"%s\", \"%s\", %b);"
-				+ "$_ = $proceed($$);"
-				+ "}";
+			+ "ist.meic.pa.BoxingProfiler.add(\"%s\", \"%s\", %b);"
+			+ "$_ = $proceed($$);"
+		+ "}";
 		
 		sumInts.instrument(new ExprEditor() {
 			public void edit(MethodCall m) throws CannotCompileException {
@@ -106,8 +113,6 @@ public class BoxingProfiler {
 		Object[] mainArgs = {args};
 		m.invoke(null, mainArgs);
 		
-		for (OutputInfo oi : map.keySet()) {
-			System.out.println(oi.methodName + " " + (oi.isBoxing? "boxed " : "unboxed ") + map.get(oi) + " " + oi.className);
-		}
+		printProfile();
 	}
 }
