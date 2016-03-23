@@ -2,6 +2,9 @@ package ist.meic.pa;
 
 import java.util.Comparator;
 
+/**
+ * Comparator for {@link OutputInfo}. Orders by methodName, then className, then isBoxing (true first).
+ */
 public class OutputComparator implements Comparator<OutputInfo> {
 
 	@Override

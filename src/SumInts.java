@@ -1,6 +1,3 @@
-package ist.meic.pa;
-
-
 public class SumInts {
 	private static long sumOfIntegerUptoN(Integer n) {
 		Long sum = 0L;
