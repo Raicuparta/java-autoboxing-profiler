@@ -14,8 +14,7 @@ public class BoxingProfiler {
 		"Integer",
 		"Long",
 		"Short",
-		"Double",
-		"String"
+		"Double"
 	};
 	
 	static String[] primitives = {
