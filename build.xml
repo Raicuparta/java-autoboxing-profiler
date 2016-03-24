@@ -24,10 +24,4 @@
     		<zipgroupfileset dir="." includes="javassist.jar" />
     	</jar>
     </target>
-
-    <target name="run" depends="clean, init, compile">
-    	<java jar="BoxingProfiler.jar" fork="true">
-    		<arg line="SumInts"/>
-    	</java>
-    </target>
 </project>

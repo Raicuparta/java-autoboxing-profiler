@@ -1,10 +1,10 @@
 package ist.meic.pa;
 import javassist.*;
-import javassist.bytecode.ClassFile;
 import javassist.expr.*;
 
 import java.io.FileInputStream;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.TreeMap;
 
 public class BoxingProfiler {
@@ -109,10 +109,12 @@ public class BoxingProfiler {
 		});
 
 		Class<?>[] argTypes = {String[].class};
-		Class<?> newSumInts = ctClass.toClass();
-		Method m = newSumInts.getMethod("main", argTypes);
-		Object[] mainArgs = {args};
-		m.invoke(null, mainArgs);
+		Class<?> newClass = ctClass.toClass();
+		Method m = newClass.getMethod("main", argTypes);
+		String[] mainArgString = Arrays.copyOfRange(args, 1, args.length);
+		Object[] mainArgObj = {mainArgString};
+		
+		m.invoke(null, mainArgObj);
 
 		printProfile();
 	}

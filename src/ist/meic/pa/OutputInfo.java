@@ -12,9 +12,9 @@ public class OutputInfo {
 	/**
 	 * @param isBoxing true if this is a boxing operation, false if unboxing.
 	 */
-	public OutputInfo(String className, String methodName, boolean isBoxing) {
+	public OutputInfo(String className, String longMethodName, boolean isBoxing) {
 		this.isBoxing = isBoxing;
-		this.methodName = methodName;
+		this.methodName = longMethodName;
 		this.className = className;
 	}
 }
