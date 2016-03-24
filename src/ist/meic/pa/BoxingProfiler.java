@@ -2,7 +2,9 @@ package ist.meic.pa;
 import javassist.*;
 import javassist.expr.*;
 
+import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.TreeMap;
@@ -74,11 +76,17 @@ public class BoxingProfiler {
 
 	public static void printProfile() {
 		for (OutputInfo oi : map.keySet()) {
-			System.out.println(oi.methodName + " " + (oi.isBoxing? "boxed " : "unboxed ") + map.get(oi) + " " + oi.className);
+			System.err.println(oi.methodName + " " + (oi.isBoxing? "boxed " : "unboxed ") + map.get(oi) + " " + oi.className);
 		}
 	}
 
 	public static void main(String[] args) throws Throwable{
+		
+		if(args.length == 0) {
+			 System.err.println("No class given as argument");
+			 return;
+		}
+		
 		OutputComparator comparator = new OutputComparator();
 		map = new TreeMap<OutputInfo, Integer>(comparator);
 
