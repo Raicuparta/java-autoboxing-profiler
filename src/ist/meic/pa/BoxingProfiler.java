@@ -5,7 +5,6 @@ import javassist.expr.*;
 import java.io.FileInputStream;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.TreeMap;
 
 public class BoxingProfiler {
 	public static void main(String[] args) throws Throwable {
@@ -32,6 +31,8 @@ public class BoxingProfiler {
 				String methodName = m.getMethodName();
 				String methodLongName = "";
 				methodLongName = m.where().getLongName();
+				
+				//true if boxing, false if unboxing
 				boolean isBoxing;
 
 				if (BPManager.isBoxing(className, methodName)) isBoxing = true;
