@@ -78,7 +78,7 @@ public class BoxingProfiler {
 		}
 	}
 
-	public static void main(String[] args) throws Throwable{
+	public static void main(String[] args) throws Throwable {
 		
 		if(args.length == 0) {
 			 System.err.println("No class given as argument");
@@ -89,7 +89,7 @@ public class BoxingProfiler {
 		map = new TreeMap<OutputInfo, Integer>(comparator);
 
 		ClassPool cp = ClassPool.getDefault();
-		CtClass ctClass = cp.makeClass(new FileInputStream(args[0]));
+		CtClass ctClass = cp.makeClass(new FileInputStream(args[0] + ".class"));
 
 		final String template = "{"
 				+ "ist.meic.pa.BoxingProfiler.add(\"%s\", \"%s\", %b);"
